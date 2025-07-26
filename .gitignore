@@ -4,4 +4,4 @@
 .env.development
 go-backend/tmp
 next-frontend/node_modules
-postgres_data/*
+postgres_data
