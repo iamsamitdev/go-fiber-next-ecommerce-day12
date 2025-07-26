@@ -1,0 +1,111 @@
+networks:
+  ecommerce_network:
+    name: ecommerce_network_dev
+    driver: bridge 
+
+services:
+  # PostgreSQL Database
+  postgres:
+    image: postgres:16-alpine
+    container_name: ecommerce_postgres_dev
+    environment:
+      POSTGRES_DB: ${DB_NAME:-ecommerce_dev}
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASS}
+      POSTGRES_INITDB_ARGS: "--encoding=UTF-8 --lc-collate=C --lc-ctype=C"
+    ports:
+      - "5433:5432"
+    volumes:
+      - ./postgres_data:/var/lib/postgresql/data
+      - ./init-scripts:/docker-entrypoint-initdb.d
+    networks:
+      - ecommerce_network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d ecommerce_dev"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+  # Go Backend API
+  go-backend:
+    build:
+      context: ./go-backend
+      dockerfile: Dockerfile
+    container_name: ecommerce_backend_dev
+    environment:
+      APP_ENV: ${APP_ENV:-development}
+      APP_PORT: ${APP_PORT:-4001}
+      APP_URL: ${APP_URL:-http://localhost:4001}
+      DB_HOST: ${DB_HOST:-postgres}
+      DB_PORT: ${DB_PORT:-5432}
+      DB_USER: ${DB_USER}
+      DB_PASS: ${DB_PASS}
+      DB_NAME: ${DB_NAME:-ecommerce_dev}
+      DB_SSL: ${DB_SSL:-disable}
+      JWT_SECRET: ${JWT_SECRET}
+      JWT_EXPIRES_IN: ${JWT_EXPIRES_IN:-24h}
+      AUTO_MIGRATE: ${AUTO_MIGRATE:-true}
+      ADMIN_EMAIL: ${ADMIN_EMAIL}
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD}
+      ADMIN_FIRST_NAME: ${ADMIN_FIRST_NAME:-Admin}
+      ADMIN_LAST_NAME: ${ADMIN_LAST_NAME:-Administrator}
+    ports:
+      - "4001:4001"
+    volumes:
+      - ./go-backend:/app
+    networks:
+      - ecommerce_network
+    depends_on:
+      postgres:
+        condition: service_healthy
+    restart: unless-stopped
+    develop:
+      watch:
+        - action: rebuild
+          path: ./go-backend
+          ignore:
+            - ./go-backend/docs/
+            - ./go-backend/tmp/
+  # Next.js Frontend
+  next-frontend:
+    build:
+      context: ./next-frontend
+      dockerfile: Dockerfile.dev
+    container_name: ecommerce_frontend_dev
+    environment:
+      NODE_ENV: ${NODE_ENV:-development}
+      NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL:-http://localhost:4001}
+      PORT: ${FRONTEND_PORT:-3001}
+      HOSTNAME: "0.0.0.0"
+      # Enable hot reload and file watching
+      WATCHPACK_POLLING: "true"
+      CHOKIDAR_USEPOLLING: "true"
+    ports:
+      - "3001:3001"
+    volumes:
+      # Mount source code for hot reload
+      - ./next-frontend:/app
+      # Preserve node_modules in container
+      - /app/node_modules
+    networks:
+      - ecommerce_network
+    depends_on:
+      - go-backend
+    restart: unless-stopped
+  # Adminer (Database Management Tool)
+  adminer:
+    image: adminer:latest
+    container_name: ecommerce_adminer_dev
+    environment:
+      ADMINER_DEFAULT_SERVER: postgres
+    ports:
+      - "8088:8080"
+    networks:
+      - ecommerce_network
+    depends_on:
+      - postgres
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
+    name: ecommerce_postgres_data_dev
