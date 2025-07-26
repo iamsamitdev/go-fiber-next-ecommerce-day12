@@ -1,0 +1,2120 @@
+basePath: /api/v1
+definitions:
+  entities.AddToCartRequest:
+    properties:
+      product_id:
+        type: string
+      quantity:
+        minimum: 1
+        type: integer
+    required:
+    - product_id
+    - quantity
+    type: object
+  entities.AdminRegisterRequest:
+    properties:
+      address:
+        type: string
+      email:
+        type: string
+      first_name:
+        type: string
+      last_name:
+        type: string
+      password:
+        type: string
+      phone:
+        type: string
+      role_id:
+        type: string
+    required:
+    - email
+    - first_name
+    - last_name
+    - password
+    - role_id
+    type: object
+  entities.ApiResponse:
+    properties:
+      data: {}
+      message:
+        type: string
+      pagination:
+        $ref: '#/definitions/entities.PaginationResponse'
+      success:
+        type: boolean
+    type: object
+  entities.Cart:
+    properties:
+      cart_items:
+        items:
+          $ref: '#/definitions/entities.CartItem'
+        type: array
+      created_at:
+        type: string
+      id:
+        type: string
+      total_price:
+        type: number
+      updated_at:
+        type: string
+      user_id:
+        type: string
+    type: object
+  entities.CartItem:
+    properties:
+      cart_id:
+        type: string
+      created_at:
+        type: string
+      id:
+        type: string
+      price:
+        type: number
+      product:
+        $ref: '#/definitions/entities.Product'
+      product_id:
+        type: string
+      quantity:
+        type: integer
+      updated_at:
+        type: string
+    type: object
+  entities.Category:
+    properties:
+      created_at:
+        type: string
+      description:
+        type: string
+      id:
+        type: string
+      image:
+        type: string
+      name:
+        type: string
+      updated_at:
+        type: string
+    type: object
+  entities.ChangePasswordRequest:
+    properties:
+      new_password:
+        type: string
+      old_password:
+        type: string
+    required:
+    - new_password
+    - old_password
+    type: object
+  entities.CreateCategoryRequest:
+    properties:
+      description:
+        type: string
+      image:
+        type: string
+      name:
+        type: string
+    required:
+    - name
+    type: object
+  entities.CreateOrderRequest:
+    properties:
+      notes:
+        type: string
+      payment_method:
+        type: string
+      shipping_address:
+        type: string
+      shipping_method:
+        type: string
+    required:
+    - payment_method
+    - shipping_address
+    - shipping_method
+    type: object
+  entities.CreatePaymentRequest:
+    properties:
+      order_id:
+        type: string
+      payment_data:
+        type: string
+      payment_method:
+        type: string
+    required:
+    - order_id
+    - payment_method
+    type: object
+  entities.CreateProductRequest:
+    properties:
+      category_id:
+        type: string
+      description:
+        type: string
+      image:
+        type: string
+      images:
+        items:
+          type: string
+        type: array
+      name:
+        type: string
+      price:
+        minimum: 0
+        type: number
+      stock:
+        minimum: 0
+        type: integer
+    required:
+    - category_id
+    - name
+    - price
+    type: object
+  entities.ErrorResponse:
+    properties:
+      error:
+        type: string
+      message:
+        type: string
+      success:
+        type: boolean
+    type: object
+  entities.ForgotPasswordRequest:
+    properties:
+      email:
+        type: string
+    required:
+    - email
+    type: object
+  entities.LoginRequest:
+    properties:
+      email:
+        type: string
+      password:
+        minLength: 8
+        type: string
+    required:
+    - email
+    - password
+    type: object
+  entities.Order:
+    properties:
+      created_at:
+        type: string
+      id:
+        type: string
+      notes:
+        type: string
+      order_items:
+        items:
+          $ref: '#/definitions/entities.OrderItem'
+        type: array
+      payment_method:
+        type: string
+      payment_status:
+        type: string
+      shipping_address:
+        type: string
+      shipping_method:
+        type: string
+      shipping_status:
+        type: string
+      status:
+        type: string
+      total_price:
+        type: number
+      tracking_number:
+        type: string
+      transactions:
+        items:
+          $ref: '#/definitions/entities.Transaction'
+        type: array
+      updated_at:
+        type: string
+      user:
+        $ref: '#/definitions/entities.User'
+      user_id:
+        type: string
+    type: object
+  entities.OrderItem:
+    properties:
+      created_at:
+        type: string
+      id:
+        type: string
+      order_id:
+        type: string
+      price:
+        type: number
+      product:
+        $ref: '#/definitions/entities.Product'
+      product_id:
+        type: string
+      quantity:
+        type: integer
+      updated_at:
+        type: string
+    type: object
+  entities.PaginationResponse:
+    properties:
+      limit:
+        type: integer
+      page:
+        type: integer
+      total_items:
+        type: integer
+      total_pages:
+        type: integer
+    type: object
+  entities.Permission:
+    properties:
+      created_at:
+        type: string
+      description:
+        type: string
+      id:
+        type: string
+      name:
+        type: string
+      updated_at:
+        type: string
+    type: object
+  entities.Product:
+    properties:
+      category:
+        $ref: '#/definitions/entities.Category'
+      category_id:
+        type: string
+      created_at:
+        type: string
+      description:
+        type: string
+      id:
+        type: string
+      image:
+        type: string
+      images:
+        items:
+          $ref: '#/definitions/entities.ProductImage'
+        type: array
+      name:
+        type: string
+      price:
+        type: number
+      stock:
+        type: integer
+      updated_at:
+        type: string
+    type: object
+  entities.ProductImage:
+    properties:
+      created_at:
+        type: string
+      id:
+        type: string
+      image_url:
+        type: string
+      product_id:
+        type: string
+      updated_at:
+        type: string
+    type: object
+  entities.ProductStats:
+    properties:
+      low_stock_products:
+        type: integer
+      out_of_stock_products:
+        type: integer
+      total_categories:
+        type: integer
+      total_products:
+        type: integer
+    type: object
+  entities.RefreshTokenRequest:
+    properties:
+      refresh_token:
+        type: string
+    required:
+    - refresh_token
+    type: object
+  entities.RegisterRequest:
+    properties:
+      address:
+        type: string
+      email:
+        type: string
+      first_name:
+        type: string
+      last_name:
+        type: string
+      password:
+        type: string
+      phone:
+        type: string
+    required:
+    - email
+    - first_name
+    - last_name
+    - password
+    type: object
+  entities.ResetPasswordRequest:
+    properties:
+      new_password:
+        type: string
+      token:
+        type: string
+    required:
+    - new_password
+    - token
+    type: object
+  entities.Role:
+    properties:
+      created_at:
+        type: string
+      description:
+        type: string
+      id:
+        type: string
+      name:
+        type: string
+      permissions:
+        items:
+          $ref: '#/definitions/entities.Permission'
+        type: array
+      updated_at:
+        type: string
+    type: object
+  entities.SalesStats:
+    properties:
+      monthly_orders:
+        type: integer
+      monthly_sales:
+        type: number
+      today_orders:
+        type: integer
+      today_sales:
+        type: number
+      total_orders:
+        type: integer
+      total_sales:
+        type: number
+      yearly_orders:
+        type: integer
+      yearly_sales:
+        type: number
+    type: object
+  entities.Transaction:
+    properties:
+      amount:
+        type: number
+      created_at:
+        type: string
+      id:
+        type: string
+      order_id:
+        type: string
+      payment_data:
+        type: string
+      payment_method:
+        type: string
+      status:
+        type: string
+      transaction_id:
+        type: string
+      updated_at:
+        type: string
+    type: object
+  entities.UpdateCartItemRequest:
+    properties:
+      quantity:
+        minimum: 1
+        type: integer
+    required:
+    - quantity
+    type: object
+  entities.UpdateCategoryRequest:
+    properties:
+      description:
+        type: string
+      image:
+        type: string
+      name:
+        type: string
+    type: object
+  entities.UpdateOrderStatusRequest:
+    properties:
+      status:
+        type: string
+    required:
+    - status
+    type: object
+  entities.UpdateProductRequest:
+    properties:
+      category_id:
+        type: string
+      description:
+        type: string
+      image:
+        type: string
+      images:
+        items:
+          type: string
+        type: array
+      name:
+        type: string
+      price:
+        minimum: 0
+        type: number
+      stock:
+        minimum: 0
+        type: integer
+    type: object
+  entities.UpdateUserRequest:
+    properties:
+      address:
+        type: string
+      avatar:
+        type: string
+      first_name:
+        type: string
+      last_name:
+        type: string
+      phone:
+        type: string
+    type: object
+  entities.User:
+    properties:
+      active:
+        type: boolean
+      address:
+        type: string
+      avatar:
+        type: string
+      created_at:
+        type: string
+      email:
+        type: string
+      first_name:
+        type: string
+      id:
+        type: string
+      last_name:
+        type: string
+      phone:
+        type: string
+      role:
+        $ref: '#/definitions/entities.Role'
+      role_id:
+        type: string
+      updated_at:
+        type: string
+    type: object
+  entities.UserStats:
+    properties:
+      active_users:
+        type: integer
+      inactive_users:
+        type: integer
+      new_users:
+        type: integer
+      total_users:
+        type: integer
+    type: object
+  entities.VerifyPaymentRequest:
+    properties:
+      payment_data:
+        type: string
+      transaction_id:
+        type: string
+    required:
+    - transaction_id
+    type: object
+host: localhost:4001
+info:
+  contact:
+    email: support@example.com
+    name: API Support
+    url: http://www.swagger.io/support
+  description: API สำหรับระบบ E-commerce ที่พัฒนาด้วย Go Fiber
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  termsOfService: http://swagger.io/terms/
+  title: Go E-commerce API
+  version: 1.0.0
+paths:
+  /auth/admin/register:
+    post:
+      consumes:
+      - application/json
+      description: ลงทะเบียนผู้ดูแลระบบใหม่ (เฉพาะ Admin เท่านั้น)
+      parameters:
+      - description: ข้อมูลการลงทะเบียนผู้ดูแลระบบ
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/entities.AdminRegisterRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/entities.ApiResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/entities.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/entities.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/entities.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: ลงทะเบียนผู้ดูแลระบบ
+      tags:
+      - Authentication
+  /auth/change-password:
+    post:
+      consumes:
+      - application/json
+      description: เปลี่ยนรหัสผ่านของผู้ใช้
+      parameters:
+      - description: ข้อมูลการเปลี่ยนรหัสผ่าน
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/entities.ChangePasswordRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/entities.ApiResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/entities.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: เปลี่ยนรหัสผ่าน
+      tags:
+      - Authentication
+  /auth/forgot-password:
+    post:
+      consumes:
+      - application/json
+      description: ส่งลิงก์รีเซ็ตรหัสผ่านไปยังอีเมล
+      parameters:
+      - description: อีเมลสำหรับรีเซ็ตรหัสผ่าน
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/entities.ForgotPasswordRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/entities.ApiResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/entities.ErrorResponse'
+      summary: ลืมรหัสผ่าน
+      tags:
+      - Authentication
+  /auth/login:
+    post:
+      consumes:
+      - application/json
+      description: เข้าสู่ระบบด้วยอีเมลและรหัสผ่าน
+      parameters:
+      - description: ข้อมูลการเข้าสู่ระบบ
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/entities.LoginRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/entities.ApiResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/entities.ErrorResponse'
+      summary: เข้าสู่ระบบ
+      tags:
+      - Authentication
+  /auth/logout:
+    post:
+      consumes:
+      - application/json
+      description: ออกจากระบบและลบ refresh token
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/entities.ApiResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/entities.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: ออกจากระบบ
+      tags:
+      - Authentication
+  /auth/refresh:
+    post:
+      consumes:
+      - application/json
+      description: รีเฟรช JWT token ด้วย refresh token
+      parameters:
+      - description: Refresh token
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/entities.RefreshTokenRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/entities.ApiResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/entities.ErrorResponse'
+      summary: รีเฟรช token
+      tags:
+      - Authentication
+  /auth/register:
+    post:
+      consumes:
+      - application/json
+      description: ลงทะเบียนผู้ใช้ใหม่ในระบบ
+      parameters:
+      - description: ข้อมูลการลงทะเบียน
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/entities.RegisterRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/entities.ApiResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/entities.ErrorResponse'
+      summary: ลงทะเบียนผู้ใช้ใหม่
+      tags:
+      - Authentication
+  /auth/reset-password:
+    post:
+      consumes:
+      - application/json
+      description: รีเซ็ตรหัสผ่านด้วย token
+      parameters:
+      - description: ข้อมูลการรีเซ็ตรหัสผ่าน
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/entities.ResetPasswordRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/entities.ApiResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/entities.ErrorResponse'
+      summary: รีเซ็ตรหัสผ่าน
+      tags:
+      - Authentication
+  /cart:
+    delete:
+      consumes:
+      - application/json
+      description: ลบสินค้าทั้งหมดออกจากตะกร้าสินค้า
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/entities.ApiResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/entities.ApiResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/entities.ApiResponse'
+      security:
+      - BearerAuth: []
+      summary: ล้างตะกร้าสินค้า
+      tags:
+      - Cart
+    get:
+      consumes:
+      - application/json
+      description: ดูตะกร้าสินค้าของผู้ใช้ปัจจุบัน
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/entities.ApiResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/entities.Cart'
+              type: object
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/entities.ApiResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/entities.ApiResponse'
+      security:
+      - BearerAuth: []
+      summary: ดูตะกร้าสินค้า
+      tags:
+      - Cart
+    post:
+      consumes:
+      - application/json
+      description: เพิ่มสินค้าลงในตะกร้าสินค้า
+      parameters:
+      - description: ข้อมูลการเพิ่มสินค้าลงตะกร้า
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/entities.AddToCartRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/entities.ApiResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/entities.ApiResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/entities.ApiResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/entities.ApiResponse'
+      security:
+      - BearerAuth: []
+      summary: เพิ่มสินค้าลงตะกร้า
+      tags:
+      - Cart
+  /cart/{itemId}:
+    delete:
+      consumes:
+      - application/json
+      description: ลบสินค้าออกจากตะกร้าสินค้า
+      parameters:
+      - description: Cart Item ID
+        in: path
+        name: itemId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/entities.ApiResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/entities.ApiResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/entities.ApiResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/entities.ApiResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/entities.ApiResponse'
+      security:
+      - BearerAuth: []
+      summary: ลบสินค้าจากตะกร้า
+      tags:
+      - Cart
+    put:
+      consumes:
+      - application/json
+      description: อัพเดทจำนวนสินค้าในตะกร้า
+      parameters:
+      - description: Cart Item ID
+        in: path
+        name: itemId
+        required: true
+        type: string
+      - description: ข้อมูลการอัพเดทสินค้าในตะกร้า
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/entities.UpdateCartItemRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/entities.ApiResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/entities.ApiResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/entities.ApiResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/entities.ApiResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/entities.ApiResponse'
+      security:
+      - BearerAuth: []
+      summary: อัพเดทสินค้าในตะกร้า
+      tags:
+      - Cart
+  /categories:
+    get:
+      consumes:
+      - application/json
+      description: ดูหมวดหมู่ทั้งหมดพร้อม pagination
+      parameters:
+      - default: 1
+        description: หน้าที่ต้องการ
+        in: query
+        name: page
+        type: integer
+      - default: 10
+        description: จำนวนรายการต่อหน้า
+        in: query
+        name: limit
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/entities.ApiResponse'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/entities.Category'
+                  type: array
+                pagination:
+                  $ref: '#/definitions/entities.PaginationResponse'
+              type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/entities.ApiResponse'
+      summary: ดูหมวดหมู่ทั้งหมด
+      tags:
+      - Categories
+    post:
+      consumes:
+      - application/json
+      description: สร้างหมวดหมู่ใหม่ (เฉพาะ Admin)
+      parameters:
+      - description: ข้อมูลการสร้างหมวดหมู่
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/entities.CreateCategoryRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            allOf:
+            - $ref: '#/definitions/entities.ApiResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/entities.Category'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/entities.ApiResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/entities.ApiResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/entities.ApiResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/entities.ApiResponse'
+      security:
+      - BearerAuth: []
+      summary: สร้างหมวดหมู่
+      tags:
+      - Categories
+  /categories/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: ลบหมวดหมู่ตาม ID (เฉพาะ Admin)
+      parameters:
+      - description: Category ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/entities.ApiResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/entities.ApiResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/entities.ApiResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/entities.ApiResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/entities.ApiResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/entities.ApiResponse'
+      security:
+      - BearerAuth: []
+      summary: ลบหมวดหมู่
+      tags:
+      - Categories
+    get:
+      consumes:
+      - application/json
+      description: ดูรายละเอียดหมวดหมู่ตาม ID
+      parameters:
+      - description: Category ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/entities.ApiResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/entities.Category'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/entities.ApiResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/entities.ApiResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/entities.ApiResponse'
+      summary: ดูหมวดหมู่ตาม ID
+      tags:
+      - Categories
+    put:
+      consumes:
+      - application/json
+      description: แก้ไขข้อมูลหมวดหมู่ (เฉพาะ Admin)
+      parameters:
+      - description: Category ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: ข้อมูลการแก้ไขหมวดหมู่
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/entities.UpdateCategoryRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/entities.ApiResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/entities.ApiResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/entities.ApiResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/entities.ApiResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/entities.ApiResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/entities.ApiResponse'
+      security:
+      - BearerAuth: []
+      summary: แก้ไขหมวดหมู่
+      tags:
+      - Categories
+  /orders:
+    get:
+      consumes:
+      - application/json
+      description: ดูคำสั่งซื้อของผู้ใช้ปัจจุบัน
+      parameters:
+      - default: 1
+        description: หน้าที่ต้องการ
+        in: query
+        name: page
+        type: integer
+      - default: 10
+        description: จำนวนรายการต่อหน้า
+        in: query
+        name: limit
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/entities.ApiResponse'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/entities.Order'
+                  type: array
+                pagination:
+                  $ref: '#/definitions/entities.PaginationResponse'
+              type: object
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/entities.ApiResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/entities.ApiResponse'
+      security:
+      - BearerAuth: []
+      summary: ดูคำสั่งซื้อของผู้ใช้
+      tags:
+      - Orders
+    post:
+      consumes:
+      - application/json
+      description: สร้างคำสั่งซื้อใหม่จากตะกร้าสินค้า
+      parameters:
+      - description: ข้อมูลการสร้างคำสั่งซื้อ
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/entities.CreateOrderRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            allOf:
+            - $ref: '#/definitions/entities.ApiResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/entities.Order'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/entities.ApiResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/entities.ApiResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/entities.ApiResponse'
+      security:
+      - BearerAuth: []
+      summary: สร้างคำสั่งซื้อ
+      tags:
+      - Orders
+  /orders/{id}:
+    get:
+      consumes:
+      - application/json
+      description: ดูรายละเอียดคำสั่งซื้อตาม ID
+      parameters:
+      - description: Order ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/entities.ApiResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/entities.Order'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/entities.ApiResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/entities.ApiResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/entities.ApiResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/entities.ApiResponse'
+      security:
+      - BearerAuth: []
+      summary: ดูคำสั่งซื้อตาม ID
+      tags:
+      - Orders
+  /orders/{id}/cancel:
+    put:
+      consumes:
+      - application/json
+      description: ยกเลิกคำสั่งซื้อ
+      parameters:
+      - description: Order ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/entities.ApiResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/entities.ApiResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/entities.ApiResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/entities.ApiResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/entities.ApiResponse'
+      security:
+      - BearerAuth: []
+      summary: ยกเลิกคำสั่งซื้อ
+      tags:
+      - Orders
+  /orders/admin:
+    get:
+      consumes:
+      - application/json
+      description: ดูคำสั่งซื้อทั้งหมดพร้อม pagination (เฉพาะ Admin)
+      parameters:
+      - default: 1
+        description: หน้าที่ต้องการ
+        in: query
+        name: page
+        type: integer
+      - default: 10
+        description: จำนวนรายการต่อหน้า
+        in: query
+        name: limit
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/entities.ApiResponse'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/entities.Order'
+                  type: array
+                pagination:
+                  $ref: '#/definitions/entities.PaginationResponse'
+              type: object
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/entities.ApiResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/entities.ApiResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/entities.ApiResponse'
+      security:
+      - BearerAuth: []
+      summary: ดูคำสั่งซื้อทั้งหมด (Admin)
+      tags:
+      - Orders
+  /orders/admin/{id}/status:
+    put:
+      consumes:
+      - application/json
+      description: อัพเดทสถานะคำสั่งซื้อ (เฉพาะ Admin)
+      parameters:
+      - description: Order ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: ข้อมูลการอัพเดทสถานะคำสั่งซื้อ
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/entities.UpdateOrderStatusRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/entities.ApiResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/entities.ApiResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/entities.ApiResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/entities.ApiResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/entities.ApiResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/entities.ApiResponse'
+      security:
+      - BearerAuth: []
+      summary: อัพเดทสถานะคำสั่งซื้อ (Admin)
+      tags:
+      - Orders
+  /payments:
+    post:
+      consumes:
+      - application/json
+      description: สร้างการชำระเงินสำหรับคำสั่งซื้อ
+      parameters:
+      - description: ข้อมูลการสร้างการชำระเงิน
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/entities.CreatePaymentRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            allOf:
+            - $ref: '#/definitions/entities.ApiResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/entities.Transaction'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/entities.ApiResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/entities.ApiResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/entities.ApiResponse'
+      security:
+      - BearerAuth: []
+      summary: สร้างการชำระเงิน
+      tags:
+      - Payments
+  /payments/{id}/cancel:
+    put:
+      consumes:
+      - application/json
+      description: ยกเลิกการชำระเงิน
+      parameters:
+      - description: Transaction ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/entities.ApiResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/entities.ApiResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/entities.ApiResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/entities.ApiResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/entities.ApiResponse'
+      security:
+      - BearerAuth: []
+      summary: ยกเลิกการชำระเงิน
+      tags:
+      - Payments
+  /payments/{id}/verify:
+    post:
+      consumes:
+      - application/json
+      description: ยืนยันการชำระเงิน
+      parameters:
+      - description: Transaction ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: ข้อมูลการยืนยันการชำระเงิน
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/entities.VerifyPaymentRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/entities.ApiResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/entities.ApiResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/entities.ApiResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/entities.ApiResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/entities.ApiResponse'
+      security:
+      - BearerAuth: []
+      summary: ยืนยันการชำระเงิน
+      tags:
+      - Payments
+  /products:
+    get:
+      consumes:
+      - application/json
+      description: ดูสินค้าทั้งหมดพร้อม pagination
+      parameters:
+      - default: 1
+        description: หน้าที่ต้องการ
+        in: query
+        name: page
+        type: integer
+      - default: 10
+        description: จำนวนรายการต่อหน้า
+        in: query
+        name: limit
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/entities.ApiResponse'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/entities.Product'
+                  type: array
+                pagination:
+                  $ref: '#/definitions/entities.PaginationResponse'
+              type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/entities.ApiResponse'
+      summary: ดูสินค้าทั้งหมด
+      tags:
+      - Products
+    post:
+      consumes:
+      - application/json
+      description: สร้างสินค้าใหม่ (เฉพาะ Admin)
+      parameters:
+      - description: ข้อมูลการสร้างสินค้า
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/entities.CreateProductRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            allOf:
+            - $ref: '#/definitions/entities.ApiResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/entities.Product'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/entities.ApiResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/entities.ApiResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/entities.ApiResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/entities.ApiResponse'
+      security:
+      - BearerAuth: []
+      summary: สร้างสินค้า
+      tags:
+      - Products
+  /products/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: ลบสินค้าตาม ID (เฉพาะ Admin)
+      parameters:
+      - description: Product ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/entities.ApiResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/entities.ApiResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/entities.ApiResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/entities.ApiResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/entities.ApiResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/entities.ApiResponse'
+      security:
+      - BearerAuth: []
+      summary: ลบสินค้า
+      tags:
+      - Products
+    get:
+      consumes:
+      - application/json
+      description: ดูรายละเอียดสินค้าตาม ID
+      parameters:
+      - description: Product ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/entities.ApiResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/entities.Product'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/entities.ApiResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/entities.ApiResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/entities.ApiResponse'
+      summary: ดูสินค้าตาม ID
+      tags:
+      - Products
+    put:
+      consumes:
+      - application/json
+      description: แก้ไขข้อมูลสินค้า (เฉพาะ Admin)
+      parameters:
+      - description: Product ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: ข้อมูลการแก้ไขสินค้า
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/entities.UpdateProductRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/entities.ApiResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/entities.ApiResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/entities.ApiResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/entities.ApiResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/entities.ApiResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/entities.ApiResponse'
+      security:
+      - BearerAuth: []
+      summary: แก้ไขสินค้า
+      tags:
+      - Products
+  /products/category/{categoryId}:
+    get:
+      consumes:
+      - application/json
+      description: ดูสินค้าที่กรองตามหมวดหมู่
+      parameters:
+      - description: Category ID
+        in: path
+        name: categoryId
+        required: true
+        type: string
+      - default: 1
+        description: หน้าที่ต้องการ
+        in: query
+        name: page
+        type: integer
+      - default: 10
+        description: จำนวนรายการต่อหน้า
+        in: query
+        name: limit
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/entities.ApiResponse'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/entities.Product'
+                  type: array
+                pagination:
+                  $ref: '#/definitions/entities.PaginationResponse'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/entities.ApiResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/entities.ApiResponse'
+      summary: ดูสินค้าตามหมวดหมู่
+      tags:
+      - Products
+  /products/search:
+    get:
+      consumes:
+      - application/json
+      description: ค้นหาสินค้าตามชื่อ คำอธิบาย หรือเงื่อนไขอื่นๆ
+      parameters:
+      - description: คำค้นหา
+        in: query
+        name: search
+        type: string
+      - description: Category ID
+        in: query
+        name: category_id
+        type: string
+      - description: ราคาต่ำสุด
+        in: query
+        name: min_price
+        type: number
+      - description: ราคาสูงสุด
+        in: query
+        name: max_price
+        type: number
+      - default: 1
+        description: หน้าที่ต้องการ
+        in: query
+        name: page
+        type: integer
+      - default: 10
+        description: จำนวนรายการต่อหน้า
+        in: query
+        name: limit
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/entities.ApiResponse'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/entities.Product'
+                  type: array
+                pagination:
+                  $ref: '#/definitions/entities.PaginationResponse'
+              type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/entities.ApiResponse'
+      summary: ค้นหาสินค้า
+      tags:
+      - Products
+  /stats/products:
+    get:
+      consumes:
+      - application/json
+      description: ดูสถิติสินค้า (เฉพาะ Admin)
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/entities.ApiResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/entities.ProductStats'
+              type: object
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/entities.ApiResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/entities.ApiResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/entities.ApiResponse'
+      security:
+      - BearerAuth: []
+      summary: ดูสถิติสินค้า
+      tags:
+      - Statistics
+  /stats/sales:
+    get:
+      consumes:
+      - application/json
+      description: ดูสถิติการขาย (เฉพาะ Admin)
+      parameters:
+      - default: monthly
+        description: 'ช่วงเวลา: daily, weekly, monthly, yearly'
+        in: query
+        name: period
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/entities.ApiResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/entities.SalesStats'
+              type: object
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/entities.ApiResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/entities.ApiResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/entities.ApiResponse'
+      security:
+      - BearerAuth: []
+      summary: ดูสถิติการขาย
+      tags:
+      - Statistics
+  /stats/users:
+    get:
+      consumes:
+      - application/json
+      description: ดูสถิติผู้ใช้ (เฉพาะ Admin)
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/entities.ApiResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/entities.UserStats'
+              type: object
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/entities.ApiResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/entities.ApiResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/entities.ApiResponse'
+      security:
+      - BearerAuth: []
+      summary: ดูสถิติผู้ใช้
+      tags:
+      - Statistics
+  /users:
+    get:
+      consumes:
+      - application/json
+      description: ดูผู้ใช้ทั้งหมดพร้อม pagination
+      parameters:
+      - default: 1
+        description: หน้าที่ต้องการ
+        in: query
+        name: page
+        type: integer
+      - default: 10
+        description: จำนวนรายการต่อหน้า
+        in: query
+        name: limit
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/entities.ApiResponse'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/entities.User'
+                  type: array
+                pagination:
+                  $ref: '#/definitions/entities.PaginationResponse'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/entities.ApiResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/entities.ApiResponse'
+      security:
+      - BearerAuth: []
+      summary: ดูผู้ใช้ทั้งหมด
+      tags:
+      - Users
+  /users/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: ลบผู้ใช้ตาม ID
+      parameters:
+      - description: User ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/entities.ApiResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/entities.ApiResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/entities.ApiResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/entities.ApiResponse'
+      security:
+      - BearerAuth: []
+      summary: ลบผู้ใช้
+      tags:
+      - Users
+    get:
+      consumes:
+      - application/json
+      description: ดูรายละเอียดผู้ใช้ตาม ID
+      parameters:
+      - description: User ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/entities.ApiResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/entities.User'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/entities.ApiResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/entities.ApiResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/entities.ApiResponse'
+      security:
+      - BearerAuth: []
+      summary: ดูผู้ใช้ตาม ID
+      tags:
+      - Users
+    put:
+      consumes:
+      - application/json
+      description: แก้ไขข้อมูลผู้ใช้
+      parameters:
+      - description: User ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: ข้อมูลการแก้ไขผู้ใช้
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/entities.UpdateUserRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/entities.ApiResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/entities.ApiResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/entities.ApiResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/entities.ApiResponse'
+      security:
+      - BearerAuth: []
+      summary: แก้ไขผู้ใช้
+      tags:
+      - Users
+securityDefinitions:
+  BearerAuth:
+    description: 'JWT token สำหรับการยืนยันตัวตน ให้ใส่ token ในรูปแบบ: Bearer <token>'
+    in: header
+    name: Authorization
+    type: apiKey
+swagger: "2.0"
