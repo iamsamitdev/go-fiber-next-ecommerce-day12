@@ -1,17 +1,18 @@
 # 🛒 Fiber E-commerce API
 
-ระบบ E-commerce API ที่สมบูรณ์แบบ พัฒนาด้วย Go Fiber framework โดยใช้หลักการ Clean Architecture รองรับการจัดการสินค้า, ตะกร้าสินค้า, คำสั่งซื้อ, การชำระเงิน และระบบสถิติ
+ระบบ E-commerce API ที่สมบูรณ์แบบ พัฒนาด้วย Go Fiber framework โดยใช้หลักการ Clean Architecture รองรับการจัดการสินค้า, ตะกร้าสินค้า, คำสั่งซื้อ, การชำระเงิน และระบบสถิติ พร้อมการ deploy ด้วย **Docker**
 
 ## 🏗️ Architecture
 
 โปรเจ็กต์นี้ใช้หลักการ **Clean Architecture** มีโครงสร้างดังนี้:
 
 ```
-fiber-ecommerce-api-day8/
+go-backend/
+├── Dockerfile                      # Docker configuration
 ├── cmd/
-│   ├── api/                   # Application entry point
+│   ├── api/                        # Application entry point
 │   │   └── main.go
-│   └── migrate/               # Database migration CLI
+│   └── migrate/                    # Database migration CLI
 │       └── main.go
 ├── internal/
 │   ├── adapters/              # External adapters
@@ -71,11 +72,11 @@ fiber-ecommerce-api-day8/
 │   ├── docs.go
 │   ├── swagger.json
 │   └── swagger.yaml
-├── API_ENDPOINTS.md           # API endpoints documentation
-├── SEEDER_GUIDE.md           # Database seeding guide
-├── docker-compose.yml         # Docker services
-├── go.mod                     # Go modules
-└── go.sum                     # Go modules checksum
+├── .env.example              # Environment variables template
+├── API_ENDPOINTS.md          # API endpoints documentation
+├── SEEDER_GUIDE.md          # Database seeding guide
+├── go.mod                   # Go modules
+└── go.sum                   # Go modules checksum
 ```
 
 ## 🚀 Features
@@ -115,7 +116,14 @@ fiber-ecommerce-api-day8/
 - **Database Seeding** (10 Categories + 20 Products)
 - **Admin User Auto-creation**
 
-### 📚 Documentation & Development
+### � Docker Features
+- **Containerized Development** (Hot reload support)
+- **Production-ready Docker configuration**
+- **Multi-stage Docker builds**
+- **Health checks & monitoring**
+- **Environment-specific configurations**
+
+### �📚 Documentation & Development
 - **Swagger API Documentation** (ภาษาไทย)
 - **Hot Reload Development** (Air)
 - **Docker Support**
@@ -124,23 +132,74 @@ fiber-ecommerce-api-day8/
 ## 📋 Prerequisites
 
 - **Go** 1.21+
-- **PostgreSQL** 15+
-- **Docker & Docker Compose** (optional)
+- **PostgreSQL** 15+ (หรือใช้ Docker)
+- **Docker & Docker Compose** (แนะนำ)
 
 ## 🛠️ Installation & Setup
 
-### 1. Clone the repository
+### Option 1: Docker Setup (แนะนำ)
+
+#### 1. Clone the repository
 ```bash
 git clone <repository-url>
-cd fiber-ecommerce-api-day8
+cd go-fiber-next-ecommerce
 ```
 
-### 2. Install dependencies
+#### 2. Environment Configuration
+สร้างไฟล์ environment variables:
+```bash
+# Copy environment template
+cp .env.example .env.development  # For development
+cp .env.example .env              # For production
+
+# Edit environment variables in .env.development or .env
+```
+
+#### 3. Docker Development Setup
+```bash
+# Start all services (backend, frontend, database)
+docker compose --env-file .env.development up --build -d
+
+# View logs
+docker compose --env-file .env.development logs -f go-backend
+
+# Access backend
+# API: http://localhost:4001
+# Swagger: http://localhost:4001/swagger/
+```
+
+#### 4. Docker Production Setup
+```bash
+# Start production services
+docker compose -f docker-compose.prod.yml --env-file .env up --build -d
+
+# View logs
+docker compose -f docker-compose.prod.yml logs -f go-backend
+```
+
+#### 5. Stop Services
+```bash
+# Development
+docker compose --env-file .env.development down --volumes
+
+# Production
+docker compose -f docker-compose.prod.yml --env-file .env down --volumes
+```
+
+### Option 2: Manual Setup
+
+#### 1. Clone the repository
+```bash
+git clone <repository-url>
+cd go-fiber-next-ecommerce/go-backend
+```
+
+#### 2. Install dependencies
 ```bash
 go mod download
 ```
 
-### 3. Install Development Tools
+#### 3. Install Development Tools
 ```bash
 # Install Air for hot reloading
 go install github.com/cosmtrek/air@latest
@@ -149,24 +208,24 @@ go install github.com/cosmtrek/air@latest
 go install github.com/swaggo/swag/cmd/swag@latest
 ```
 
-### 4. Environment Configuration
+#### 4. Environment Configuration
 สร้างไฟล์ `.env` ตามตัวอย่าง:
 ```env
 # 🌐 Environment
 APP_ENV=development
-APP_PORT=3000
-APP_URL=http://localhost:3000
+APP_PORT=4001
+APP_URL=http://localhost:4001
 
 # 📦 Database (PostgreSQL)
-DB_HOST=localhost
+DB_HOST=localhost  # Use 'postgres' for Docker
 DB_PORT=5432
-DB_NAME=fiberecomapidb
-DB_USER=postgres
-DB_PASS=123456
+DB_NAME=ecommerce_dev
+DB_USER=ecommerce_user
+DB_PASS=SecureDB#Pass2024!
 DB_SSL=disable
 
 # 🔐 JWT Config
-JWT_SECRET=your-super-secret-jwt-key-at-least-32-characters-long
+JWT_SECRET=fibernextcommerce_development_jwt_secret_key_2024_secure_minimum_32_chars
 JWT_EXPIRES_IN=24h
 
 # 🔄 Database Migration
@@ -174,35 +233,42 @@ AUTO_MIGRATE=true
 
 # 👑 Admin User Seeding (Optional)
 ADMIN_EMAIL=admin@email.com
-ADMIN_PASSWORD=SecurePassword123!
+ADMIN_PASSWORD=AdminSecure#Pass2024!
 ADMIN_FIRST_NAME=System
 ADMIN_LAST_NAME=Administrator
 ```
 
-### 5. Database Setup
+#### 5. Database Setup
 
 #### Option A: Using Docker (แนะนำ)
 ```bash
-# Start PostgreSQL
-docker-compose up -d postgres
+# Using Docker Compose from root directory
+cd ..  # Go back to root project directory
+docker compose --env-file .env.development up -d postgres
 
-# View logs
-docker-compose logs -f postgres
+# View PostgreSQL logs
+docker compose --env-file .env.development logs -f postgres
 ```
 
 #### Option B: Manual PostgreSQL Setup
 สร้าง PostgreSQL database ด้วยข้อมูลใน `.env` file
 
-### 6. Run the Application
+#### 6. Run the Application
 
 #### Development (with hot reload)
 ```bash
+# Make sure you're in go-backend directory
+cd go-backend  # if not already there
+
 # Run with hot reload
 air
 
 # หรือรันโดยตรง
 go run cmd/api/main.go
 ```
+
+🚀 **API จะรันที่**: `http://localhost:4001`
+📚 **Swagger Docs**: `http://localhost:4001/swagger/`
 
 #### Production
 ```bash
@@ -211,11 +277,72 @@ go build -o bin/api cmd/api/main.go
 ./bin/api
 ```
 
+## 🐳 Docker Commands
+
+### Development Environment
+```bash
+# Start backend with all services (from root directory)
+docker compose --env-file .env.development up --build -d
+
+# Start only backend service
+docker compose --env-file .env.development up --build go-backend -d
+
+# View backend logs
+docker compose --env-file .env.development logs -f go-backend
+
+# Execute commands in backend container
+docker compose --env-file .env.development exec go-backend sh
+
+# Restart backend service
+docker compose --env-file .env.development restart go-backend
+
+# Stop all services
+docker compose --env-file .env.development down --volumes
+```
+
+### Production Environment
+```bash
+# Start production backend
+docker compose -f docker-compose.prod.yml --env-file .env up --build -d
+
+# View production logs
+docker compose -f docker-compose.prod.yml logs -f go-backend
+
+# Stop production services
+docker compose -f docker-compose.prod.yml --env-file .env down --volumes
+```
+
+### Backend-only Docker Commands
+```bash
+# Build backend image only
+docker build -t go-ecommerce-backend ./go-backend
+
+# Run backend container standalone
+docker run -p 4001:4001 --env-file .env go-ecommerce-backend
+
+# Run with environment variables
+docker run -p 4001:4001 \
+  -e DB_HOST=host.docker.internal \
+  -e DB_PORT=5432 \
+  -e DB_NAME=ecommerce_dev \
+  go-ecommerce-backend
+```
+
 🚀 **API จะรันที่**: `http://localhost:3000`
 
 ## 🗄️ Database Management
 
 ### Migration & Seeding
+
+#### Using Docker
+```bash
+# Manual migration และ seeding in Docker container
+docker compose --env-file .env.development exec go-backend go run cmd/migrate/main.go
+
+# Or run migration when starting container (AUTO_MIGRATE=true in .env)
+```
+
+#### Manual Setup
 ```bash
 # Manual migration และ seeding
 go run cmd/migrate/main.go
@@ -256,7 +383,10 @@ AUTO_MIGRATE=false go run cmd/api/main.go
 
 ## 📚 API Documentation
 
-เข้าถึง Swagger UI documentation ได้ที่: **`http://localhost:3000/swagger/`**
+เข้าถึง Swagger UI documentation ได้ที่: 
+
+**Development**: `http://localhost:4001/swagger/`  
+**Production**: `http://localhost:4001/swagger/` (หรือตาม domain ที่ตั้งค่า)
 
 ### 🛣️ Available Endpoints
 
@@ -330,7 +460,7 @@ AUTO_MIGRATE=false go run cmd/api/main.go
 
 #### 📝 Register User
 ```bash
-curl -X POST http://localhost:3000/api/v1/auth/register \
+curl -X POST http://localhost:4001/api/v1/auth/register \
   -H "Content-Type: application/json" \
   -d '{
     "email": "user@example.com",
@@ -344,7 +474,7 @@ curl -X POST http://localhost:3000/api/v1/auth/register \
 
 #### 🔑 Login
 ```bash
-curl -X POST http://localhost:3000/api/v1/auth/login \
+curl -X POST http://localhost:4001/api/v1/auth/login \
   -H "Content-Type: application/json" \
   -d '{
     "email": "user@example.com",
@@ -354,7 +484,7 @@ curl -X POST http://localhost:3000/api/v1/auth/login \
 
 #### 🛒 Add Product to Cart
 ```bash
-curl -X POST http://localhost:3000/api/v1/cart \
+curl -X POST http://localhost:4001/api/v1/cart \
   -H "Content-Type: application/json" \
   -H "Authorization: Bearer <your-jwt-token>" \
   -d '{
@@ -365,7 +495,7 @@ curl -X POST http://localhost:3000/api/v1/cart \
 
 #### 📋 Create Order
 ```bash
-curl -X POST http://localhost:3000/api/v1/orders \
+curl -X POST http://localhost:4001/api/v1/orders \
   -H "Content-Type: application/json" \
   -H "Authorization: Bearer <your-jwt-token>" \
   -d '{
@@ -417,10 +547,29 @@ curl -X POST http://localhost:3000/api/v1/orders \
 - `AdminRequired()` - ตรวจสอบ admin role
 - `RoleRequired(roles...)` - ตรวจสอบ roles ที่กำหนด
 
+### 🐳 Docker Configuration
+- `Dockerfile` - Multi-stage build สำหรับ production
+- `docker-compose.yml` - Development environment
+- `docker-compose.prod.yml` - Production environment
+- Health checks และ monitoring
+- Hot reload support ใน development
+
 ## 🔧 Development Tools
 
 ### 🔥 Hot Reload
 โปรเจ็กต์ใช้ [Air](https://github.com/cosmtrek/air) สำหรับ hot reloading ระหว่างการพัฒนา
+
+#### การใช้งาน Hot Reload
+```bash
+# ติดตั้ง Air
+go install github.com/cosmtrek/air@latest
+
+# รันด้วย hot reload
+air
+
+# หรือใช้ Docker ที่มี hot reload support
+docker compose --env-file .env.development up --build go-backend -d
+```
 
 ### 📚 Swagger Documentation
 สร้าง/อัพเดท Swagger documentation:
@@ -435,6 +584,8 @@ make run           # รันแอปพลิเคชัน
 make dev           # รันแบบ development mode
 make test          # รัน tests
 make migrate       # รัน database migration
+make docker-build  # Build Docker image
+make docker-run    # Run Docker container
 ```
 
 ## 🛠️ Tech Stack
@@ -456,24 +607,60 @@ make migrate       # รัน database migration
 
 ## 🐳 Docker Support
 
-ใช้ `docker-compose.yml` ที่มีให้เพื่อรัน PostgreSQL:
+### Docker Compose (แนะนำ)
+ใช้ Docker Compose files ที่มีให้ในโฟลเดอร์ root:
 
+#### Development Environment
 ```bash
-# Start PostgreSQL only
-docker-compose up -d postgres
+# Start all services (backend, frontend, database)
+docker compose --env-file .env.development up --build -d
+
+# Start only backend + database
+docker compose --env-file .env.development up --build go-backend postgres -d
 
 # View logs
-docker-compose logs -f postgres
+docker compose --env-file .env.development logs -f go-backend
 
 # Stop services
-docker-compose down
-
-# Remove volumes (reset database)
-docker-compose down -v
+docker compose --env-file .env.development down --volumes
 ```
+
+#### Production Environment
+```bash
+# Start production services
+docker compose -f docker-compose.prod.yml --env-file .env up --build -d
+
+# View logs
+docker compose -f docker-compose.prod.yml logs -f go-backend
+
+# Stop services
+docker compose -f docker-compose.prod.yml --env-file .env down --volumes
+```
+
+### Standalone Docker
+```bash
+# Build backend image
+docker build -t go-ecommerce-backend .
+
+# Run with PostgreSQL connection
+docker run -p 4001:4001 \
+  -e DB_HOST=host.docker.internal \
+  -e DB_PORT=5432 \
+  -e DB_NAME=ecommerce_dev \
+  -e DB_USER=ecommerce_user \
+  -e DB_PASS=SecureDB#Pass2024! \
+  go-ecommerce-backend
+```
+
+### Docker Development Features
+- **Hot Reload**: โค้ดจะ reload อัตโนมัติเมื่อมีการแก้ไข
+- **Volume Mounting**: โค้ดใน host จะ sync กับ container
+- **Health Checks**: ตรวจสอบสถานะแอปพลิเคชัน
+- **Network Isolation**: Services แยกออกจากกันอย่างปลอดภัย
 
 ## 🧪 Testing
 
+### Manual Testing
 ```bash
 # Run tests
 go test ./...
@@ -483,6 +670,25 @@ go test -cover ./...
 
 # Run tests with verbose output
 go test -v ./...
+```
+
+### Docker Testing
+```bash
+# Run tests in Docker container
+docker compose --env-file .env.development exec go-backend go test ./...
+
+# Run tests with coverage in Docker
+docker compose --env-file .env.development exec go-backend go test -cover ./...
+```
+
+### API Testing
+```bash
+# Test health endpoint
+curl http://localhost:4001/health
+
+# Test API endpoints (requires running backend)
+curl http://localhost:4001/api/v1/categories
+curl http://localhost:4001/api/v1/products
 ```
 
 ## 📝 API Response Format
@@ -519,25 +725,87 @@ go test -v ./...
 
 ## 🚀 Deployment
 
-### Production Build
+### Docker Deployment (แนะนำ)
+
+#### Production Build
+```bash
+# Build production image
+docker build -t go-ecommerce-backend-prod .
+
+# Or use docker-compose
+docker compose -f docker-compose.prod.yml build go-backend
+```
+
+#### Environment Variables for Production
+```bash
+# Set production environment
+export APP_ENV=production
+export AUTO_MIGRATE=false
+export JWT_SECRET=<strong-production-secret>
+export DB_HOST=<production-db-host>
+export DB_USER=<production-db-user>
+export DB_PASS=<production-db-password>
+```
+
+#### Deploy with Docker Compose
+```bash
+# Start production environment
+docker compose -f docker-compose.prod.yml --env-file .env up -d
+
+# Check logs
+docker compose -f docker-compose.prod.yml logs -f go-backend
+```
+
+### Manual Deployment
+
+#### Production Build
 ```bash
 # Build for production
 go build -o bin/api cmd/api/main.go
 
-# Set production environment
-export APP_ENV=production
-export AUTO_MIGRATE=false
-
-# Run
+# Run production binary
 ./bin/api
 ```
 
-### Environment Variables
+#### Environment Variables for Manual Setup
 สำหรับ production ให้ตั้งค่า:
 - `APP_ENV=production`
 - `AUTO_MIGRATE=false`
 - `JWT_SECRET=<strong-secret>`
 - Database credentials
+
+### Cloud Deployment Options
+
+#### VPS/Server Deployment
+```bash
+# 1. Clone repository on server
+git clone <repository-url>
+cd go-fiber-next-ecommerce
+
+# 2. Set up environment variables
+cp .env.example .env
+# Edit .env with production values
+
+# 3. Start with Docker Compose
+docker compose -f docker-compose.prod.yml --env-file .env up -d
+
+# 4. Check logs
+docker compose -f docker-compose.prod.yml logs -f
+```
+
+#### Container Registry Deployment
+```bash
+# 1. Build and tag image
+docker build -t your-registry/go-ecommerce-backend:latest ./go-backend
+
+# 2. Push to registry
+docker push your-registry/go-ecommerce-backend:latest
+
+# 3. Deploy on target server
+docker run -d -p 4001:4001 \
+  --env-file .env \
+  your-registry/go-ecommerce-backend:latest
+```
 
 ## 📄 License
 

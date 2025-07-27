@@ -1,6 +1,6 @@
 # Go Fiber Next E-commerce Frontend
 
-โปรเจ็กต์ frontend สำหรับระบบ e-commerce ที่พัฒนาด้วย Next.js 15 และ TypeScript ทำงานร่วมกับ backend ที่พัฒนาด้วย Go Fiber
+โปรเจ็กต์ frontend สำหรับระบบ e-commerce ที่พัฒนาด้วย Next.js 15 และ TypeScript ทำงานร่วมกับ backend ที่พัฒนาด้วย Go Fiber รองรับการ deploy ด้วย **Docker**
 
 ## 🚀 ฟีเจอร์หลัก
 
@@ -13,6 +13,7 @@
 - **การปรับปรุงรูปภาพ**: การปรับปรุงรูปภาพอัตโนมัติของ Next.js
 - **แบ่งหน้าแล้ว**: แยกโซน user และ admin
 - **แอนิเมชั่น**: tw-animate-css สำหรับแอนิเมชั่นที่ลื่นไหล
+- **🐳 Docker Support**: รองรับการ deploy ด้วย Docker และ Docker Compose
 
 ## 🛠️ เทคโนโลยีที่ใช้
 
@@ -33,7 +34,9 @@
 
 ```
 next-frontend/
-├── public/                          # ไฟล์สแตติก
+├── Dockerfile                      # Production Docker configuration
+├── Dockerfile.dev                 # Development Docker configuration  
+├── public/                         # ไฟล์สแตติก
 │   ├── images/                      # รูปภาพสินค้าและ UI
 │   │   ├── arrivals/               # รูปภาพสินค้าใหม่
 │   │   ├── blog/                   # รูปภาพบล็อก
@@ -89,49 +92,164 @@ next-frontend/
 ### ข้อกำหนดเบื้องต้น
 
 - Node.js 18+ และ npm/yarn/pnpm
-- Go Fiber Backend API (ต้องเรียกใช้ก่อน)
+- Go Fiber Backend API (หรือใช้ Docker)
+- Docker & Docker Compose (แนะนำ)
 - Git
 
-### การติดตั้ง
+### Option 1: Docker Setup (แนะนำ)
 
-1. **เข้าไปยังโฟลเดอร์ frontend**
-   ```bash
-   cd next-frontend
-   ```
+#### 1. Clone และ Setup Environment
+```bash
+# Clone repository
+git clone <repository-url>
+cd go-fiber-next-ecommerce
+
+# Setup environment variables
+cp .env.example .env.development  # For development
+cp .env.example .env              # For production
+```
+
+#### 2. Docker Development Setup
+```bash
+# Start all services (frontend, backend, database)
+docker compose --env-file .env.development up --build -d
+
+# Start only frontend + backend + database
+docker compose --env-file .env.development up --build next-frontend go-backend postgres -d
+
+# View frontend logs
+docker compose --env-file .env.development logs -f next-frontend
+
+# Access applications:
+# Frontend: http://localhost:3001
+# Backend: http://localhost:4001
+```
+
+#### 3. Docker Production Setup
+```bash
+# Start production services
+docker compose -f docker-compose.prod.yml --env-file .env up --build -d
+
+# Access applications:
+# Nginx Proxy: http://localhost:8800
+# Frontend: http://localhost:3001
+# Backend: http://localhost:4001
+```
+
+#### 4. Stop Services
+```bash
+# Development
+docker compose --env-file .env.development down --volumes
+
+# Production
+docker compose -f docker-compose.prod.yml --env-file .env down --volumes
+```
+
+### Option 2: Manual Setup
+
+#### 1. การติดตั้ง
+
+**เข้าไปยังโฟลเดอร์ frontend**
+```bash
+cd next-frontend
+```
 
 2. **ติดตั้ง dependencies**
-   ```bash
-   npm install
-   # หรือ
-   yarn install
-   # หรือ
-   pnpm install
-   ```
+```bash
+npm install
+# หรือ
+yarn install
+# หรือ
+pnpm install
+```
 
 3. **ตั้งค่าตัวแปร environment**
-   ```bash
-   # สร้างไฟล์ .env.local
-   echo "NEXT_PUBLIC_API_URL=http://localhost:8080" > .env.local
-   ```
+```bash
+# สร้างไฟล์ .env.local
+echo "NEXT_PUBLIC_API_URL=http://localhost:4001" > .env.local
+```
 
 4. **รันเซิร์ฟเวอร์สำหรับพัฒนา**
-   ```bash
-   npm run dev
-   # หรือ
-   yarn dev
-   # หรือ
-   pnpm dev
-   ```
+```bash
+npm run dev
+# หรือ
+yarn dev
+# หรือ
+pnpm dev
+```
 
 5. **เปิดเบราว์เซอร์**
-   ไปที่ [http://localhost:3001](http://localhost:3001) เพื่อดูแอปพลิเคชั่น
+ไปที่ [http://localhost:3001](http://localhost:3001) เพื่อดูแอปพลิเคชั่น
+
+## 🐳 Docker Commands
+
+### Development Environment
+```bash
+# Start frontend with all services (from root directory)
+docker compose --env-file .env.development up --build -d
+
+# Start only frontend service  
+docker compose --env-file .env.development up --build next-frontend -d
+
+# View frontend logs
+docker compose --env-file .env.development logs -f next-frontend
+
+# Execute commands in frontend container
+docker compose --env-file .env.development exec next-frontend sh
+
+# Restart frontend service
+docker compose --env-file .env.development restart next-frontend
+
+# Stop all services
+docker compose --env-file .env.development down --volumes
+```
+
+### Production Environment
+```bash
+# Start production frontend
+docker compose -f docker-compose.prod.yml --env-file .env up --build -d
+
+# View production logs
+docker compose -f docker-compose.prod.yml logs -f next-frontend
+
+# Stop production services
+docker compose -f docker-compose.prod.yml --env-file .env down --volumes
+```
+
+### Frontend-only Docker Commands
+```bash
+# Build development image
+docker build -f Dockerfile.dev -t next-ecommerce-frontend-dev .
+
+# Build production image
+docker build -f Dockerfile -t next-ecommerce-frontend-prod .
+
+# Run development container standalone
+docker run -p 3001:3001 --env-file .env.local next-ecommerce-frontend-dev
+
+# Run production container standalone
+docker run -p 3001:3001 -e NEXT_PUBLIC_API_URL=http://localhost:4001 next-ecommerce-frontend-prod
+```
+
+### Docker Development Features
+- **Hot Reload**: โค้ดจะ reload อัตโนมัติเมื่อมีการแก้ไข
+- **Volume Mounting**: โค้ดใน host จะ sync กับ container  
+- **Fast Refresh**: Next.js fast refresh ทำงานใน Docker
+- **Environment Variables**: รองรับ environment-specific configuration
 
 ## 📝 คำสั่งที่มีให้ใช้
 
+### Manual Commands
 - `npm run dev` - เริ่มเซิร์ฟเวอร์พัฒนาด้วย Turbopack บนพอร์ต 3001
 - `npm run build` - สร้างบิลด์สำหรับ production ที่ปรับปรุงแล้ว
 - `npm run start` - เริ่มเซิร์ฟเวอร์ production บนพอร์ต 3001
 - `npm run lint` - รัน ESLint เพื่อตรวจสอบคุณภาพโค้ด
+
+### Docker Commands
+- `docker compose --env-file .env.development up next-frontend -d` - เริ่ม development container
+- `docker compose -f docker-compose.prod.yml up next-frontend -d` - เริ่ม production container
+- `docker compose logs -f next-frontend` - ดู logs
+- `docker compose exec next-frontend npm run build` - Build ใน container
 
 ## 🏗️ สถาปัตยกรรม
 
@@ -174,8 +292,32 @@ next-frontend/
 ## 🔧 การตั้งค่า
 
 ### Environment Variables
+
+#### Development (.env.local)
 ```bash
-NEXT_PUBLIC_API_URL=http://localhost:8080  # URL ของ Go Fiber backend
+NEXT_PUBLIC_API_URL=http://localhost:4001  # URL ของ Go Fiber backend
+
+# For Docker development
+NEXT_PUBLIC_API_URL=http://go-backend:4001  # ใช้ service name ใน Docker network
+```
+
+#### Production (.env)  
+```bash
+NEXT_PUBLIC_API_URL=https://your-api-domain.com  # Production API URL
+NODE_ENV=production
+```
+
+#### Docker Environment Variables
+```bash
+# In docker-compose.yml
+NODE_ENV=development
+NEXT_PUBLIC_API_URL=http://go-backend:4001
+PORT=3001
+HOSTNAME=0.0.0.0
+
+# For hot reload in Docker
+WATCHPACK_POLLING=true
+CHOKIDAR_USEPOLLING=true
 ```
 
 ### Tailwind CSS
@@ -201,10 +343,51 @@ NEXT_PUBLIC_API_URL=http://localhost:8080  # URL ของ Go Fiber backend
 แอปพลิเคชั่นเชื่อมต่อกับ Go Fiber backend ผ่าน:
 - RESTful API endpoints
 - JWT authentication
-- Axios HTTP client
+- Axios HTTP client  
 - Auto token refresh
 
+### API Configuration
+```typescript
+// lib/api.ts
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4001';
+
+// In Docker environment
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://go-backend:4001';
+```
+
 ## 🚀 การ Deploy
+
+### Option 1: Docker Deployment (แนะนำ)
+
+#### Development Deployment
+```bash
+# Start development environment
+docker compose --env-file .env.development up --build -d
+
+# Access frontend: http://localhost:3001
+```
+
+#### Production Deployment  
+```bash
+# Start production environment
+docker compose -f docker-compose.prod.yml --env-file .env up --build -d
+
+# Access via Nginx proxy: http://localhost:8800
+# Direct access: http://localhost:3001
+```
+
+#### Standalone Docker Deployment
+```bash
+# Build production image
+docker build -f Dockerfile -t next-ecommerce-frontend .
+
+# Run container
+docker run -d -p 3001:3001 \
+  -e NEXT_PUBLIC_API_URL=https://your-api-domain.com \
+  next-ecommerce-frontend
+```
+
+### Option 2: Manual Deployment
 
 1. **สร้าง production build**
    ```bash
@@ -221,144 +404,137 @@ NEXT_PUBLIC_API_URL=http://localhost:8080  # URL ของ Go Fiber backend
    vercel --prod
    ```
 
-## 📁 โครงสร้างโปรเจ็กต์
+### Option 3: Cloud Deployment
 
-```
-nextfiber-commerce/
-├── public/                          # ไฟล์สแตติก
-│   ├── images/                      # รูปภาพสินค้าและ UI
-│   │   ├── arrivals/               # รูปภาพสินค้าใหม่
-│   │   ├── blog/                   # รูปภาพบล็อก
-│   │   ├── cart/                   # รูปภาพตะกร้าสินค้า
-│   │   ├── categories/             # รูปภาพหมวดหมู่
-│   │   ├── checkout/               # ไอคอนชำระเงิน
-│   │   ├── countdown/              # รูปภาพส่วนนับถอยหลัง
-│   │   ├── hero/                   # รูปภาพส่วนหลัก
-│   │   ├── icons/                  # ไอคอน UI
-│   │   ├── logo/                   # โลโก้แบรนด์
-│   │   ├── payment/                # ไอคอนการชำระเงิน
-│   │   ├── products/               # รูปภาพสินค้า
-│   │   ├── promo/                  # รูปภาพโปรโมชั่น
-│   │   ├── sellers/                # รูปภาพขายดี
-│   │   └── users/                  # รูปภาพผู้ใช้
-│   └── *.svg                       # ไอคอน SVG
-├── src/
-│   ├── app/                        # Next.js App Router
-│   │   ├── (site)/                 # กลุ่มเส้นทางไซต์
-│   │   │   └── layout.tsx          # เลย์เอาต์ไซต์พร้อม Header/Footer
-│   │   ├── globals.css             # สไตล์ทั่วไป
-│   │   └── favicon.ico             # ไอคอนไซต์
-│   ├── components/                 # React components
-│   │   ├── home/                   # คอมโพเนนต์หน้าแรก
-│   │   ├── shared/                 # คอมโพเนนต์ที่ใช้ร่วมกัน
-│   │   │   └── site/               # คอมโพเนนต์ทั่วไซต์ (Header, Footer)
-│   │   └── ui/                     # คอมโพเนนต์ UI ที่ใช้ซ้ำได้
-│   ├── lib/                        # ไลบรารี่เครื่องมือ
-│   │   └── utils.ts                # ฟังก์ชั่นเครื่องมือ
-│   └── types/                      # นิยาม TypeScript types
-│       └── Menu.ts                 # นิยามประเภทเมนู
-├── components.json                 # การตั้งค่า shadcn/ui
-├── next.config.ts                  # การตั้งค่า Next.js
-├── package.json                    # Dependencies และ scripts
-├── postcss.config.mjs             # การตั้งค่า PostCSS
-├── tailwind.config.js             # การตั้งค่า Tailwind CSS
-└── tsconfig.json                   # การตั้งค่า TypeScript
+#### Vercel Deployment
+```bash
+# Install Vercel CLI
+npm i -g vercel
+
+# Deploy to Vercel
+vercel --prod
+
+# Set environment variables in Vercel dashboard
+NEXT_PUBLIC_API_URL=https://your-api-domain.com
 ```
 
-## 🚀 การเริ่มต้นใช้งาน
+#### VPS/Server Deployment
+```bash
+# 1. Clone on server
+git clone <repository-url>
+cd go-fiber-next-ecommerce
 
-### ข้อกำหนดเบื้องต้น
+# 2. Set up environment
+cp .env.example .env
+# Edit .env with production values
 
-- Node.js 18+ และ npm/yarn/pnpm/bun
-- Git
+# 3. Deploy with Docker
+docker compose -f docker-compose.prod.yml --env-file .env up -d
 
-### การติดตั้ง
+# 4. Access via Nginx proxy
+curl http://your-server-ip:8800
+```
 
-1. **โคลนโปรเจ็กต์**
-   ```bash
-   git clone <repository-url>
-   cd nextfiber-commerce
-   ```
+### Environment-specific Deployment
 
-2. **ติดตั้ง dependencies**
-   ```bash
-   npm install
-   # หรือ
-   yarn install
-   # หรือ
-   pnpm install
-   # หรือ
-   bun install
-   ```
+#### Development
+- Hot reload enabled
+- Source maps included
+- Debug mode on
+- Volume mounting for live code changes
 
-3. **รันเซิร์ฟเวอร์สำหรับพัฒนา**
-   ```bash
-   npm run dev
-   # หรือ
-   yarn dev
-   # หรือ
-   pnpm dev
-   # หรือ
-   bun dev
-   ```
+#### Production  
+- Optimized build
+- Static file serving
+- Compressed assets
+- Health checks enabled
 
-4. **เปิดเบราว์เซอร์**
-   ไปที่ [http://localhost:3000](http://localhost:3000) เพื่อดูแอปพลิเคชั่น
+## 🧪 Testing
 
-## 📝 คำสั่งที่มีให้ใช้
+### Manual Testing
+```bash
+# Run tests (if configured)
+npm test
 
-- `npm run dev` - เริ่มเซิร์ฟเวอร์พัฒนาด้วย Turbopack
-- `npm run build` - สร้างบิลด์สำหรับ production ที่ปรับปรุงแล้ว
-- `npm run start` - เริ่มเซิร์ฟเวอร์ production
-- `npm run lint` - รัน ESLint เพื่อตรวจสอบคุณภาพโค้ด
+# Run tests with coverage
+npm run test:coverage
 
-## 🏗️ สถาปัตยกรรม
+# Run E2E tests
+npm run test:e2e
+```
 
-### โครงสร้าง Component
+### Docker Testing
+```bash
+# Run tests in Docker container
+docker compose --env-file .env.development exec next-frontend npm test
 
-- **Home Components** (`src/components/home/`): คอมโพเนนต์เฉพาะหน้าแรก
-- **Shared Components** (`src/components/shared/`): คอมโพเนนต์ที่ใช้ร่วมกันทั่วไซต์
-- **UI Components** (`src/components/ui/`): คอมโพเนนต์ UI พื้นฐาน (ปุ่ม, อินพุต, ฯลฯ)
+# Build test in Docker
+docker compose --env-file .env.development exec next-frontend npm run build
+```
 
-### ระบบ Layout
+### Frontend Testing
+```bash
+# Test frontend accessibility
+curl http://localhost:3001
 
-โปรเจ็กต์ใช้ Next.js App Router พร้อมโครงสร้างเลย์เอาต์แบบจัดกลุ่ม:
-- Root layout จัดการฟอนต์ทั่วไปและโครงสร้าง HTML พื้นฐาน
-- Site layout (`(site)/layout.tsx`) รวม Header และ Footer
-- แต่ละหน้าจะถูกแสดงผลภายในระบบเลย์เอาต์นี้
+# Test API connectivity (requires backend)
+curl http://localhost:3001/api/health
+```
 
-### วิธีการจัดการสไตล์
+## �️ Docker Configuration
 
-- **Tailwind CSS v4**: CSS framework แบบ utility-first
-- **CSS Variables**: สำหรับธีมที่สม่ำเสมอ
-- **Responsive Design**: แนวทาง Mobile-first
-- **Component Variants**: ใช้ class-variance-authority สำหรับรูปแบบคอมโพเนนต์
+### Dockerfile.dev (Development)
+- Hot reload support
+- Volume mounting for live code changes
+- Development dependencies included
+- Source maps enabled
 
-## 🎨 ฟีเจอร์ UI/UX
+### Dockerfile (Production)
+- Multi-stage build for optimization
+- Static file serving with Next.js
+- Minimal image size
+- Health checks included
 
-- **ดีไซน์ทันสมัย**: อินเตอร์เฟซที่สะอาดและเรียบง่าย
-- **เลย์เอาต์ตอบสนอง**: ทำงานได้กับทุกขนาดอุปกรณ์
-- **องค์ประกอบแบบโต้ตอบ**: แอนิเมชั่นและทรานซิชั่นที่ลื่นไหล
-- **การเข้าถึง**: สร้างด้วยแนวทางปฏิบัติที่ดีด้านการเข้าถึง
-- **ประสิทธิภาพ**: รูปภาพและฟอนต์ที่ปรับปรุงแล้ว
+### Docker Compose Integration
+- Network isolation with backend services
+- Environment variable injection
+- Volume persistence for development
+- Service dependencies management
 
-## 🔧 การตั้งค่า
+## 🔧 Troubleshooting
 
-### Tailwind CSS
-โปรเจ็กต์ใช้ Tailwind CSS v4 พร้อมการตั้งค่าที่กำหนดเองใน `tailwind.config.js`
+### Common Docker Issues
 
-### TypeScript
-รองรับ TypeScript แบบเต็มรูปแบบพร้อมการตรวจสอบประเภทแบบเข้มงวดที่เปิดใช้ใน `tsconfig.json`
+#### Port Already in Use
+```bash
+# Check what's using port 3001
+netstat -tulpn | grep :3001
 
-### Next.js
-ตั้งค่าด้วย App Router, การปรับปรุงรูปภาพ และการปรับปรุงฟอนต์ใน `next.config.ts`
+# Kill process
+sudo kill -9 $(sudo lsof -t -i:3001)
+```
 
-## 📱 การออกแบบตอบสนอง
+#### Container Build Failures
+```bash
+# Clean Docker cache
+docker builder prune -a
 
-แอปพลิเคชั่นสร้างด้วยแนวทาง mobile-first:
-- **มือถือ**: 320px - 768px
-- **แท็บเล็ต**: 768px - 1024px
-- **เดสก์ท็อป**: 1024px+
+# Rebuild without cache
+docker compose build --no-cache next-frontend
+
+# Remove container and rebuild
+docker compose down next-frontend
+docker compose up --build next-frontend -d
+```
+
+#### API Connection Issues
+```bash
+# Check API connectivity from container
+docker compose exec next-frontend curl http://go-backend:4001/health
+
+# Check environment variables
+docker compose exec next-frontend env | grep NEXT_PUBLIC
+```
 
 ## 🤝 การมีส่วนร่วม
 
